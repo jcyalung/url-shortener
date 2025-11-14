@@ -9,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/*
+
 // GET /find 
 // this endpoint takes in alias to find an available url. 
 // if found, the user is redirected to that url.
@@ -112,7 +112,7 @@ app.get("/delete/:alias", (request, response) => {
         response.status(500).json({ error: "Internal server error", message: error.message });
     }
 });
-*/
+
 
 // reference 
 
@@ -125,7 +125,6 @@ app.get("/delete/:alias", (request, response) => {
 //     - 500 -> I ran into an error
 app.get("/", (request, response) => {
     try {
-        
         
         const number = Math.floor(Math.random() * 10) + 1;  
         
