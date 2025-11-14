@@ -1,19 +1,27 @@
+/* DO NOT EDIT */
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-//import { findURL, listURLs, createURL, deleteURL } from "./db-helper.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+// when you have implemented db-helper.js, you can uncomment these to import them.
+// import { findURL, listURLs, createURL, deleteURL } from "./db-helper.js";
+
+// all methods are stubbed so that the code compiles. 
+// you must implement these methods so that the API works.
+
+
+
+
+
 // GET /find 
 // this endpoint takes in alias to find an available url. 
 // if found, the user is redirected to that url.
- 
  
 // Query: alias
 // Behavior:
@@ -32,15 +40,15 @@ app.get("/find", (request, response) => {
         const result = findURL(alias);
 
         // if you've found a URL in the database, return a redirect of that url
-        if (...) {
-            return res.redirect(...);
+        if ("") {
+            return res.redirect("");
         } else {
             // return 404
-            return res.status(...).json(...);
+            return res.status("").json("");
         }
     } catch (error) {
         // 500 error
-        return res.status(...).json(...);
+        return res.status("").json("");
     }
 });
 
@@ -57,10 +65,10 @@ app.get("/list-urls", (request, response) => {
         // use listURLs to get all urls
         const results = listURLs();
         // return success with results as data
-        res.json(...);
+        res.json("");
     } catch (error) {
         // 500 - internal server error
-        res.status(...).json(...);
+        res.status("").json("");
     }
 });
 
@@ -79,7 +87,7 @@ app.post("/create-url", (request, response) => {
         
         // return status code of 400 if link or alias aren't provided
 
-        const result = createURL(...);
+        const result = createURL("");
         
         // if operation is successful return 201
     } catch (error) {
@@ -101,7 +109,7 @@ app.get("/delete/:alias", (request, response) => {
 
         // if no alias provided, return 400
 
-        const result = deleteUrl(...);
+        const result = deleteUrl("");
         
         // if result is true, return 200
 
@@ -112,7 +120,6 @@ app.get("/delete/:alias", (request, response) => {
         response.status(500).json({ error: "Internal server error", message: error.message });
     }
 });
-
 
 // reference 
 
@@ -125,11 +132,13 @@ app.get("/delete/:alias", (request, response) => {
 //     - 500 -> I ran into an error
 app.get("/", (request, response) => {
     try {
-        
+        console.log("/ called")
+        const result = deleteURL("s");
+        console.log(result);
         const number = Math.floor(Math.random() * 10) + 1;  
         
         if(number === 10) { throw Error("I rolled a 10"); }
-        if(request.query != {}) { 
+        if(request.query == {}) { 
             console.log(request.query); 
             const { query } = request;
             return response.json({ success: true, number, query });
