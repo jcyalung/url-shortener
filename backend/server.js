@@ -2,21 +2,47 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { parseArgs } from "./args.js";
+import { Registry, Counter } from "prom-client";
+import { findURL, listURLs, createURL, deleteURL } from "./db-helper.js";
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const args = parseArgs();
+const PORT = args.port;
+const LOGGING = args.logging;
+const FILENAME = args.database;
+
+// Create a Registry to register the metrics
+var register = null;
+if (LOGGING) {
+    register = new Registry();
+
+    // TODO: add a counter for http requests and urls
+    // urls have labels: url and alias.
+    // http requests have labels: method, route, status_code
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-// when you have implemented db-helper.js, you can uncomment these to import them.
-// import { findURL, listURLs, createURL, deleteURL } from "./db-helper.js";
+// GET /metrics
+app.get("/metrics", async (req, res) => {
+    if (!LOGGING) {
+        return res.status(404).json({ error: "Metrics endpoint not found" });
+    }
+    try {
+        res.set("Content-Type", register.contentType);
+        res.end(await register.metrics());
+    } catch (error) {
+        res.status(500).end(error);
+    }
+});
 
-// all methods are stubbed so that the code compiles. 
+
+// all methods in db-helper.js are stubbed so that the code compiles. 
 // you must implement these methods so that the API works.
-
-
-
 
 
 // GET /find 
@@ -35,7 +61,6 @@ app.get("/find", (request, response) => {
         
         // extract alias from request query
         // if no available alias found, return a status code of 400
-
         // use findURL() to get the url
         const result = findURL(alias);
 
@@ -49,6 +74,10 @@ app.get("/find", (request, response) => {
     } catch (error) {
         // 500 error
         return res.status("").json("");
+    } finally {
+        if (LOGGING) {
+            // add prometheus metrics
+        }
     }
 });
 
@@ -69,6 +98,10 @@ app.get("/list-urls", (request, response) => {
     } catch (error) {
         // 500 - internal server error
         res.status("").json("");
+    } finally {
+        if (LOGGING) {
+            // add prometheus metrics
+        }
     }
 });
 
@@ -92,6 +125,10 @@ app.post("/create-url", (request, response) => {
         // if operation is successful return 201
     } catch (error) {
         // return 500
+    } finally {
+        if (LOGGING) {
+            // add prometheus metrics
+        }
     }
 });
 
@@ -118,10 +155,13 @@ app.get("/delete/:alias", (request, response) => {
 
         // internal server error
         response.status(500).json({ error: "Internal server error", message: error.message });
+    } finally {
+        if (LOGGING) {
+            // add prometheus metrics
+        }
     }
 });
 
-// reference 
 
 // GET /
 // returns a random number between 0 and 9
@@ -146,10 +186,17 @@ app.get("/", (request, response) => {
         return response.json({ success: true, number });
     } catch(error) {
         return response.status(500).json({error: "I ran into an error", message: error.message});
+    } finally {
+        if (LOGGING) {
+            // add prometheus metrics
+        }
     }
 });
 
 // start server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}, with database ${FILENAME}`);
+    if (LOGGING) {
+        console.log(`Logging is enabled, view logging in /metrics`);
+    }
 });
