@@ -11,3 +11,4 @@ Frontend:
 Backend:
 - `express`
 - `better-sqlite3`
+- `prometheus`
